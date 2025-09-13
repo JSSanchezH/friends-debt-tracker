@@ -1,0 +1,52 @@
+.btn {
+  display: inline-block;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  /* transition: background 0.2s ease, color 0.2s ease; */
+}
+
+/* Botón primario (morado) */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Botón secundario (naranja) */
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+/* Ancho */
+.btn-width-small {
+  width: 80px;
+}
+.btn-width-medium {
+  width: 120px;
+}
+.btn-width-large {
+  width: 100%;
+} /* llenar el contenedor */
+
+/* Alto */
+.btn-height-small {
+  height: 30px;
+}
+.btn-height-medium {
+  height: 45px;
+}
+.btn-height-large {
+  height: 60px;
+}

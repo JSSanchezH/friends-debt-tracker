@@ -1,0 +1,24 @@
+<div class="auth-container">
+  <h1>{{ texts.title }}</h1>
+  <p>{{ texts.subtitle }}</p>
+  <form [formGroup]="form" (ngSubmit)="formSubmit.emit()">
+    <ng-container *ngFor="let field of fields">
+      <input
+        [type]="field.type || 'text'"
+        [formControlName]="field.name"
+        [placeholder]="field.placeholder"
+      />
+    </ng-container>
+
+    <app-button
+      sizeWidth="large"
+      sizeHeight="medium"
+      type="submit"
+      btnClass="btn-primary"
+    >
+      {{ texts.submitButton }}
+    </app-button>
+  </form>
+
+  <a *ngIf="texts.linkText" (click)="linkClick.emit()">{{ texts.linkText }}</a>
+</div>

@@ -1,0 +1,11 @@
+<button
+  [ngClass]="[
+    'btn',
+    'btn-width-' + sizeWidth,
+    'btn-height-' + sizeHeight,
+    btnClass
+  ]"
+  [type]="type"
+>
+  <ng-content></ng-content>
+</button>
