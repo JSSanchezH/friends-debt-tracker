@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000
 app.use(
 	cors({
 		origin: "http://localhost:4200", // permite Angular
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		credentials: true,
 	})
 )
