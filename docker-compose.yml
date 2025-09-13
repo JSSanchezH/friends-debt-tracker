@@ -33,13 +33,19 @@ services:
       - "5432:5432"
     networks:
       - app-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   redis:
     image: redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     networks:
       - app-network
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
 
   adminer:
     image: adminer
@@ -54,3 +60,7 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
