@@ -1,0 +1,63 @@
+# ---------------------------------------
+# Node.js
+# ---------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------
+# Build output
+# ---------------------------------------
+dist/
+build/
+
+# ---------------------------------------
+# Environment variables
+# ---------------------------------------
+# For practical purposes in this technical test, .env is intentionally not ignored.
+# Remove this exception in a real production environment.
+
+# .env          <-- This line is commented out on purpose
+
+# ---------------------------------------
+# Logs
+# ---------------------------------------
+logs/
+*.log
+*.log.*
+
+# ---------------------------------------
+# OS-specific files
+# ---------------------------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------
+# Docker
+# ---------------------------------------
+**/docker-compose.override.yml
+docker-compose.dev.yml
+docker-compose.prod.yml
+
+# ---------------------------------------
+# PostgreSQL / Redis
+# ---------------------------------------
+*.pid
+*.sock
+*.db
+*.tar
+
+# ---------------------------------------
+# VSCode and IDE settings
+# ---------------------------------------
+.vscode/
+.idea/
+*.sw?
+
+# ---------------------------------------
+# Frontend specific
+# ---------------------------------------
+# Angular
+.angular/
