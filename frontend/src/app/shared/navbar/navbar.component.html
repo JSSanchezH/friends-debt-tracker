@@ -1,0 +1,29 @@
+<nav class="navbar">
+  <div class="navbar-logo">
+    <h1>Mis Finanzas</h1>
+  </div>
+  <div class="navbar-actions">
+    <!-- Mostrar si el usuario está logeado -->
+    <ng-container *ngIf="isLoggedIn; else guestLinks">
+      <app-button btnClass="btn-primary" (click)="goToDebts()"
+        >Ver deudas</app-button
+      >
+      <app-button btnClass="btn-primary" (click)="goToCreateDebt()"
+        >Crear deuda</app-button
+      >
+      <app-button btnClass="btn-primary" (click)="logout()"
+        >Cerrar sesión</app-button
+      >
+    </ng-container>
+
+    <!-- Mostrar si no hay token -->
+    <ng-template #guestLinks>
+      <app-button btnClass="btn-primary" (click)="goToLogin()"
+        >Iniciar sesión</app-button
+      >
+      <app-button btnClass="btn-secondary" (click)="goToRegister()"
+        >Registrarse</app-button
+      >
+    </ng-template>
+  </div>
+</nav>

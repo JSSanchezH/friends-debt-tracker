@@ -69,6 +69,22 @@ router.get("/", async (req, res) => {
 	}
 })
 
+router.get("/:id", async (req, res) => {
+	const { id } = req.params
+	try {
+		const debt = await prisma.debt.findUnique({
+			where: { id },
+		})
+
+		if (!debt || debt.userId !== req.user.id)
+			return res.status(404).json({ error: "Debt not found" })
+
+		res.json(debt)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+})
+
 // PUT /debts/:id → actualizar deuda
 router.put("/:id", async (req, res) => {
 	const { id } = req.params

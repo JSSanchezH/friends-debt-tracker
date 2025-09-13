@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { PopupComponent } from '../../../shared/popup/popup.component';
 import { Debt } from '../../../models/debt.models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-debt-list',
@@ -19,7 +20,7 @@ export class DebtListComponent implements OnInit {
   popupVisible = false;
   popupMessage = '';
 
-  constructor(private debtService: DebtService) {}
+  constructor(private debtService: DebtService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadDebts();
@@ -38,6 +39,7 @@ export class DebtListComponent implements OnInit {
 
   setFilter(filter: 'all' | 'paid' | 'pending') {
     this.filter = filter;
+    console.log('Filter set to:', this.filter);
     this.loadDebts();
   }
 
@@ -48,6 +50,9 @@ export class DebtListComponent implements OnInit {
     });
   }
 
+  viewDetail(debtId: string) {
+    this.router.navigate(['/debts', debtId]);
+  }
   showPopup(message: string) {
     this.popupMessage = message;
     this.popupVisible = true;

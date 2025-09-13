@@ -1,30 +1,89 @@
+/* Contenedor principal */
 .debt-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 2rem;
   background: var(--color-background);
-  border-radius: var(--border-radius-md);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-primary);
 }
 
+/* Títulos */
+.debt-container h1 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: var(--color-text-dark);
+}
+
+/* Filtros */
 .filters {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
+.filters app-button {
+  flex: 1;
+}
+
+/* Tabla */
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  font-size: 0.95rem;
 }
 
-th,
-td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #d1d5db;
-}
-
-th {
+/* Encabezados */
+thead th {
   text-align: left;
+  padding: 0.75rem;
   color: var(--color-text-dark);
+  font-weight: 600;
+  background: var(--color-background);
+}
+
+/* Filas */
+tbody tr {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+tbody td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: var(--color-text-dark);
+}
+
+/* Última columna (acciones) */
+tbody td:last-child {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+/* Estado de deuda */
+td:nth-child(4) {
+  font-weight: 500;
+}
+
+td:nth-child(4)::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  background-color: green; /* por defecto pagada */
+}
+
+td:nth-child(4):contains("Pendiente")::before {
+  background-color: var(--color-danger);
+}
+
+/* Popup */
+app-popup {
+  margin-top: 1rem;
 }

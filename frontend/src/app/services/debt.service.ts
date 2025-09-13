@@ -21,4 +21,8 @@ export class DebtService {
   markAsPaid(id: string): Observable<Debt> {
     return this.http.patch<Debt>(`${this.baseUrl}/${id}/pay`, {});
   }
+
+  getDebtById(id: string) {
+    return this.http.get<Debt>(`${this.baseUrl}/${id}`);
+  }
 }

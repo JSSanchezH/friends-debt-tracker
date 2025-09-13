@@ -1,0 +1,18 @@
+<div class="debt-detail-container" *ngIf="debt; else errorTpl">
+  <h2>Detalle de la deuda</h2>
+  <p><strong>Descripción:</strong> {{ debt.description }}</p>
+  <p><strong>Monto:</strong> {{ debt.amount }}</p>
+  <p><strong>Moneda:</strong> {{ debt.currency }}</p>
+  <p><strong>Estado:</strong> {{ debt.paid ? "Pagada" : "Pendiente" }}</p>
+  <p><strong>Fecha de vencimiento:</strong> {{ debt.dueDate | date }}</p>
+  <p *ngIf="debt.paid">
+    <strong>Fecha de pago:</strong> {{ debt.paidAt | date }}
+  </p>
+
+  <app-button btnClass="btn-primary" (click)="goBack()">Volver</app-button>
+</div>
+
+<ng-template #errorTpl>
+  <p>{{ errorMessage }}</p>
+  <app-button btnClass="btn-primary" (click)="goBack()">Volver</app-button>
+</ng-template>
