@@ -1,19 +1,28 @@
 const express = require("express")
 const { PrismaClient } = require("@prisma/client")
 const auth = require("../middleware/auth")
+const redisClient = require("../cache")
 
 const router = express.Router()
 const prisma = new PrismaClient()
 
-// Middleware de auth en todas las rutas
+// TTL en segundos para el cache
+const CACHE_TTL = 300
+
+// Helper: clave de cache por usuario
+const debtCacheKey = (userId) => `debts:${userId}`
+
+// Middleware de autenticación en todas las rutas
 router.use(auth)
 
 // POST /debts → crear deuda
 router.post("/", async (req, res) => {
 	const { amount, currency, description, dueDate } = req.body
 
-	if (amount <= 0)
-		return res.status(400).json({ error: "Debt cannot be negative" })
+	if (!amount || amount <= 0)
+		return res
+			.status(400)
+			.json({ error: "Debt must be greater than 0" })
 
 	try {
 		const debt = await prisma.debt.create({
@@ -25,7 +34,11 @@ router.post("/", async (req, res) => {
 				userId: req.user.id,
 			},
 		})
-		res.json(debt)
+
+		// Limpiar cache
+		await redisClient.del(debtCacheKey(req.user.id))
+
+		res.status(201).json(debt)
 	} catch (err) {
 		res.status(400).json({ error: err.message })
 	}
@@ -33,64 +46,101 @@ router.post("/", async (req, res) => {
 
 // GET /debts → listar todas las deudas del usuario
 router.get("/", async (req, res) => {
-	const debts = await prisma.debt.findMany({
-		where: { userId: req.user.id },
-	})
-	res.json(debts)
+	try {
+		// Revisar cache
+		const cached = await redisClient.get(debtCacheKey(req.user.id))
+		if (cached) return res.json(JSON.parse(cached))
+
+		// Si no hay cache, consultar DB
+		const debts = await prisma.debt.findMany({
+			where: { userId: req.user.id },
+		})
+
+		// Guardar en cache
+		await redisClient.setEx(
+			debtCacheKey(req.user.id),
+			CACHE_TTL,
+			JSON.stringify(debts)
+		)
+
+		res.json(debts)
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch debts" })
+	}
 })
 
-// PUT /debts/:id → editar deuda (si no está pagada)
+// PUT /debts/:id → actualizar deuda
 router.put("/:id", async (req, res) => {
 	const { id } = req.params
-	const existing = await prisma.debt.findUnique({ where: { id } })
-	if (!existing || existing.userId !== req.user.id) {
-		return res.status(404).json({ error: "Debt not found" })
-	}
-	if (existing.paid)
-		return res.status(400).json({ error: "Cannot edit a paid debt" })
-
 	const { amount, currency, description, dueDate } = req.body
-	if (amount <= 0)
-		return res.status(400).json({ error: "Debt cannot be negative" })
 
-	const updated = await prisma.debt.update({
-		where: { id },
-		data: {
-			amount,
-			currency,
-			description,
-			dueDate: dueDate ? new Date(dueDate) : null,
-		},
-	})
-	res.json(updated)
+	if (!amount || amount <= 0)
+		return res
+			.status(400)
+			.json({ error: "Debt must be greater than 0" })
+
+	try {
+		const existing = await prisma.debt.findUnique({ where: { id } })
+		if (!existing || existing.userId !== req.user.id)
+			return res.status(404).json({ error: "Debt not found" })
+		if (existing.paid)
+			return res
+				.status(400)
+				.json({ error: "Cannot edit a paid debt" })
+
+		const updated = await prisma.debt.update({
+			where: { id },
+			data: {
+				amount,
+				currency: currency || existing.currency,
+				description: description || existing.description,
+				dueDate: dueDate ? new Date(dueDate) : existing.dueDate,
+			},
+		})
+
+		await redisClient.del(debtCacheKey(req.user.id))
+		res.json(updated)
+	} catch (err) {
+		res.status(400).json({ error: err.message })
+	}
 })
 
 // DELETE /debts/:id
 router.delete("/:id", async (req, res) => {
 	const { id } = req.params
-	const existing = await prisma.debt.findUnique({ where: { id } })
-	if (!existing || existing.userId !== req.user.id) {
-		return res.status(404).json({ error: "Debt not found" })
+	try {
+		const existing = await prisma.debt.findUnique({ where: { id } })
+		if (!existing || existing.userId !== req.user.id)
+			return res.status(404).json({ error: "Debt not found" })
+
+		await prisma.debt.delete({ where: { id } })
+		await redisClient.del(debtCacheKey(req.user.id))
+		res.json({ message: "Debt deleted" })
+	} catch (err) {
+		res.status(400).json({ error: err.message })
 	}
-	await prisma.debt.delete({ where: { id } })
-	res.json({ message: "Debt deleted" })
 })
 
 // PATCH /debts/:id/pay → marcar como pagada
 router.patch("/:id/pay", async (req, res) => {
 	const { id } = req.params
-	const existing = await prisma.debt.findUnique({ where: { id } })
-	if (!existing || existing.userId !== req.user.id) {
-		return res.status(404).json({ error: "Debt not found" })
-	}
-	if (existing.paid)
-		return res.status(400).json({ error: "Debt already paid" })
+	try {
+		const existing = await prisma.debt.findUnique({ where: { id } })
+		if (!existing || existing.userId !== req.user.id)
+			return res.status(404).json({ error: "Debt not found" })
+		if (existing.paid)
+			return res.status(400).json({ error: "Debt already paid" })
 
-	const updated = await prisma.debt.update({
-		where: { id },
-		data: { paid: true, paidAt: new Date() },
-	})
-	res.json(updated)
+		const updated = await prisma.debt.update({
+			where: { id },
+			data: { paid: true, paidAt: new Date() },
+		})
+
+		await redisClient.del(debtCacheKey(req.user.id))
+		res.json(updated)
+	} catch (err) {
+		res.status(400).json({ error: err.message })
+	}
 })
 
 module.exports = router
