@@ -1,0 +1,13 @@
+<app-form
+  [form]="loginForm"
+  [fields]="fields"
+  [texts]="texts"
+  (formSubmit)="submit()"
+  (linkClick)="goToRegister()"
+></app-form>
+
+<app-popup
+  [message]="popupMessage"
+  [visible]="popupVisible"
+  (close)="popupVisible = false"
+></app-popup>
