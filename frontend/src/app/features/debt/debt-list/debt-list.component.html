@@ -1,0 +1,67 @@
+<div class="debt-container">
+  <h1>Mis Deudas</h1>
+
+  <div class="filters">
+    <app-button
+      btnClass="btn-primary"
+      sizeWidth="small"
+      sizeHeight="small"
+      (click)="setFilter('all')"
+    >
+      Todas
+    </app-button>
+    <app-button
+      btnClass="btn-primary"
+      sizeWidth="small"
+      sizeHeight="small"
+      (click)="setFilter('pending')"
+    >
+      Pendientes
+    </app-button>
+    <app-button
+      btnClass="btn-primary"
+      sizeWidth="small"
+      sizeHeight="small"
+      (click)="setFilter('paid')"
+    >
+      Pagadas
+    </app-button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Descripción</th>
+        <th>Monto</th>
+        <th>Moneda</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let debt of debts">
+        <td>{{ debt.description }}</td>
+        <td>{{ debt.amount }}</td>
+        <td>{{ debt.currency }}</td>
+        <td>{{ debt.paid ? "Pagada" : "Pendiente" }}</td>
+        <td>
+          <app-button
+            *ngIf="!debt.paid"
+            btnClass="btn-primary"
+            sizeWidth="small"
+            sizeHeight="small"
+            (click)="markPaid(debt.id)"
+          >
+            Marcar como pagada
+          </app-button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <app-popup
+    *ngIf="popupVisible"
+    [message]="popupMessage"
+    (close)="popupVisible = false"
+  ></app-popup>
+</div>

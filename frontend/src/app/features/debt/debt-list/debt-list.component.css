@@ -1,0 +1,30 @@
+.debt-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+th {
+  text-align: left;
+  color: var(--color-text-dark);
+}
